@@ -1,0 +1,58 @@
+# --------------------------------------------------------------------------------------
+# VigiliаFocus — KMP + CMP Pomodoro Timer
+# Based on official GitHub template, optimized for Kotlin/Compose/KMP/Gradle
+# --------------------------------------------------------------------------------------
+
+# --------------------
+# 1. BUILD ARTIFACTS
+# --------------------
+.gradle/
+**/build/
+*.aab
+*.apk
+output-metadata.json
+
+# --------------------
+# 2. LOCAL CONFIGURATION
+# --------------------
+local.properties
+*.log
+.DS_Store
+
+# --------------------
+# 3. ANDROID STUDIO / INTELLIJ
+# --------------------
+.idea/
+*.iml
+.kotlin/
+deploymentTargetSelector.xml
+render.experimental.xml
+misc.xml
+
+# --------------------
+# 4. ANDROID GENERATED
+# --------------------
+captures/
+.externalNativeBuild/
+.cxx/
+*.hprof
+
+# --------------------
+# 5. SECURITY & SECRETS
+# --------------------
+*.jks
+*.keystore
+google-services.json
+
+# --------------------
+# 6. KMP / IOS / XCODE
+# --------------------
+xcuserdata/
+*.xcodeproj/*
+!*.xcodeproj/project.pbxproj
+!*.xcodeproj/xcshareddata/
+!*.xcodeproj/project.xcworkspace/
+!*.xcworkspace/contents.xcworkspacedata
+**/xcshareddata/WorkspaceSettings.xcsettings
+Pods/
+node_modules/
