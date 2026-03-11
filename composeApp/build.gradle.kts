@@ -8,6 +8,10 @@ plugins {
 }
 
 kotlin {
+    compilerOptions {
+        freeCompilerArgs.add("-Xexpect-actual-classes")
+    }
+
     android {
         namespace = "com.miguelrivera.vigiliafocus.shared"
         compileSdk = libs.versions.android.compileSdk.get().toInt()
