@@ -28,7 +28,7 @@ Rather than treating a timer app as a trivial countdown, this project approaches
 | UI | Compose Multiplatform — shared across Android and iOS |
 | State | MVI — `StateFlow` + sealed interface |
 | DI | Koin — KMP-native, no annotation processing |
-| Persistence | DataStore (`androidMain`) — settings storage |
+| Persistence | Multiplatform Settings (`commonMain`) — settings storage |
 | Platform Timer | `expect/actual` — wraps platform clock per target |
 | Navigation | Compose Navigation — single `NavHost` in `commonMain` |
 | Testing | `kotlin.test` in `commonTest` |

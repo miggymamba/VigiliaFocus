@@ -1,6 +1,8 @@
 package com.miguelrivera.vigiliafocus.di
 
 import android.app.Application
+import org.koin.android.ext.koin.androidContext
+import org.koin.core.context.GlobalContext.startKoin
 
 /**
  * Application entry point for the Android target.
@@ -12,6 +14,9 @@ import android.app.Application
 class VigiliaFocusApp: Application() {
     override fun onCreate() {
         super.onCreate()
-        initKoin(androidModule)
+        startKoin {
+            androidContext(this@VigiliaFocusApp)
+            modules(sharedModules() + androidModule)
+        }
     }
 }

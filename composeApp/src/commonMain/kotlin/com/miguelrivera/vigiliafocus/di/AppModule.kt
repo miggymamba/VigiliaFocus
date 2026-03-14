@@ -1,5 +1,7 @@
 package com.miguelrivera.vigiliafocus.di
 
+import com.miguelrivera.vigiliafocus.data.repository.SettingsRepositoryImpl
+import com.miguelrivera.vigiliafocus.domain.repository.ISettingsRepository
 import org.koin.core.module.Module
 import org.koin.dsl.module
 
@@ -11,6 +13,7 @@ import org.koin.dsl.module
  * adds its own module as the presentation layer grows in Phase 4.
  */
 val appModule: Module = module {
+    single<ISettingsRepository> { SettingsRepositoryImpl(observableSettings = get()) }
     // VF4.S1: TimerViewModel registered here
     // VF4.S2: SettingsViewModel registered here
 }
