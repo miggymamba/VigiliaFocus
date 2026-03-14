@@ -12,7 +12,7 @@ Rather than treating a timer app as a trivial countdown, this project approaches
 - **Shared Domain:** Timer logic, session state, and use cases are pure Kotlin with zero platform imports.
 - **MVI State Management:** Immutable `TimerUiState` driven by `StateFlow` ensures predictable rendering across configuration changes.
 - **`expect/actual` Platform Bridge:** Platform clock and timer tick are abstracted behind a clean contract, with each target providing its own implementation.
-- **Settings Persistence:** Timer durations survive app restarts via DataStore on Android.
+- **Settings Persistence:** Timer durations survive app restarts via multiplatform-settings.
 
 ---
 
@@ -43,14 +43,14 @@ This project follows **Clean Architecture** with a KMP/CMP source set layout. Do
 ### Source Set Breakdown
 
 - **`commonMain`**: Compose UI, ViewModels, domain models, use cases, repository interfaces, and `expect` declarations. No platform imports.
-- **`androidMain`**: Android actuals — `DataStoreSettingsRepository`, `PlatformTimer.android.kt`.
+- **`androidMain`**: Android actuals — `PlatformTimer.android.kt`.
 - **`iosMain`**: iOS actuals — `PlatformTimer.ios.kt`. (Phase 6)
 - **`androidApp`**: Entry point only — `MainActivity` calls `setContent { App() }`, nothing else.
 ```
 VigiliаFocus/
 ├── composeApp/
-│   ├── commonMain/       ← Compose UI, ViewModels, domain, use cases, expect
-│   ├── androidMain/      ← DataStore, PlatformTimer Android actual
+│   ├── commonMain/       ← Compose UI, ViewModels, domain, use cases, data, expect
+│   ├── androidMain/      ← PlatformTimer Android actual
 │   └── iosMain/          ← PlatformTimer iOS actual (Phase 6)
 └── androidApp/           ← Entry point only (MainActivity)
 ```
