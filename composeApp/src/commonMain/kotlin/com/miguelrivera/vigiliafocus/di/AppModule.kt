@@ -2,7 +2,16 @@ package com.miguelrivera.vigiliafocus.di
 
 import com.miguelrivera.vigiliafocus.data.repository.SettingsRepositoryImpl
 import com.miguelrivera.vigiliafocus.domain.repository.ISettingsRepository
+import com.miguelrivera.vigiliafocus.domain.usecase.PauseTimerUseCase
+import com.miguelrivera.vigiliafocus.domain.usecase.ResetTimerUseCase
+import com.miguelrivera.vigiliafocus.domain.usecase.SkipToNextModeUseCase
+import com.miguelrivera.vigiliafocus.domain.usecase.StartTimerUseCase
+import com.miguelrivera.vigiliafocus.platform.PlatformTimer
+import com.miguelrivera.vigiliafocus.presentation.settings.SettingsViewModel
+import com.miguelrivera.vigiliafocus.presentation.timer.TimerViewModel
 import org.koin.core.module.Module
+import org.koin.core.module.dsl.singleOf
+import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
 /**
@@ -14,8 +23,21 @@ import org.koin.dsl.module
  */
 val appModule: Module = module {
     single<ISettingsRepository> { SettingsRepositoryImpl(observableSettings = get()) }
+
+    // Domain Use Cases required by TimerViewModel
+    singleOf(::StartTimerUseCase)
+    singleOf(::PauseTimerUseCase)
+    singleOf(::ResetTimerUseCase)
+    singleOf(::SkipToNextModeUseCase)
+
+    // Platform dependencies (expect/actual)
+    singleOf(::PlatformTimer)
+
     // VF4.S1: TimerViewModel registered here
+    viewModelOf(::TimerViewModel)
+
     // VF4.S2: SettingsViewModel registered here
+    viewModelOf(::SettingsViewModel)
 }
 
 /**

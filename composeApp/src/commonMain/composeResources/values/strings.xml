@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Vigilia Focus</string>
+    <string name="settings_title">Settings</string>
+    <string name="settings_focus_duration">Focus Duration (min)</string>
+    <string name="settings_short_break">Short Break (min)</string>
+    <string name="settings_long_break">Long Break (min)</string>
+    <string name="settings_sessions_before_long">Sessions before Long Break</string>
+    <string name="action_back">Back</string>
+    <string name="action_start">START</string>
+    <string name="action_pause">PAUSE</string>
+    <string name="action_reset">RESET</string>
+    <string name="action_skip">SKIP</string>
+</resources>

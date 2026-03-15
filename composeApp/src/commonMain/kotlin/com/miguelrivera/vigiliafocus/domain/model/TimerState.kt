@@ -21,4 +21,22 @@ data class TimerState(
     val isRunning: Boolean = false,
     val completedSessions: Int = 0,
     val settings: TimerSettings = TimerSettings()
-)
+) {
+    /**
+     * The baseline duration in seconds for the current [mode] based on [settings].
+     * * Provides a central point for calculating the total duration of a session,
+     * ensuring consistency between the countdown logic and UI progress indicators.
+     */
+    val totalSecondsForMode: Int
+        get() = when (mode) {
+            TimerMode.FOCUS -> settings.focusDuration * 60
+            TimerMode.SHORT_BREAK -> settings.shortBreakDuration * 60
+            TimerMode.LONG_BREAK -> settings.longBreakDuration * 60
+        }
+
+    /**
+     * Determines if the timer is currently at the starting point of its [mode].
+     */
+    val isAtStart: Boolean
+        get() = !isRunning && remainingSeconds == totalSecondsForMode
+}
