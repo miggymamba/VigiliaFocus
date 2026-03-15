@@ -9,6 +9,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.miguelrivera.vigiliafocus.presentation.navigation.SettingsScreenRoute
 import com.miguelrivera.vigiliafocus.presentation.navigation.TimerScreenRoute
+import com.miguelrivera.vigiliafocus.presentation.settings.SettingsScreen
 import com.miguelrivera.vigiliafocus.presentation.theme.VigiliaTheme
 import com.miguelrivera.vigiliafocus.presentation.timer.TimerScreen
 
@@ -33,11 +34,11 @@ fun App() {
                 }
 
                 composable<SettingsScreenRoute> {
-                    /*SetingsScreen(
+                    SettingsScreen(
                         onNavigateBack = {
                             navController.navigateUp()
                         }
-                    )*/
+                    )
                 }
             }
         }
