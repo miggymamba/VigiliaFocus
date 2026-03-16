@@ -6,6 +6,7 @@ import com.miguelrivera.vigiliafocus.domain.usecase.PauseTimerUseCase
 import com.miguelrivera.vigiliafocus.domain.usecase.ResetTimerUseCase
 import com.miguelrivera.vigiliafocus.domain.usecase.SkipToNextModeUseCase
 import com.miguelrivera.vigiliafocus.domain.usecase.StartTimerUseCase
+import com.miguelrivera.vigiliafocus.platform.PlatformAlerter
 import com.miguelrivera.vigiliafocus.platform.PlatformTimer
 import com.miguelrivera.vigiliafocus.presentation.settings.SettingsViewModel
 import com.miguelrivera.vigiliafocus.presentation.timer.TimerViewModel
@@ -32,6 +33,7 @@ val appModule: Module = module {
 
     // Platform dependencies (expect/actual)
     singleOf(::PlatformTimer)
+    singleOf(::PlatformAlerter)
 
     // VF4.S1: TimerViewModel registered here
     viewModelOf(::TimerViewModel)

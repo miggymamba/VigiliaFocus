@@ -8,6 +8,7 @@ import com.miguelrivera.vigiliafocus.domain.usecase.PauseTimerUseCase
 import com.miguelrivera.vigiliafocus.domain.usecase.ResetTimerUseCase
 import com.miguelrivera.vigiliafocus.domain.usecase.SkipToNextModeUseCase
 import com.miguelrivera.vigiliafocus.domain.usecase.StartTimerUseCase
+import com.miguelrivera.vigiliafocus.platform.PlatformAlerter
 import com.miguelrivera.vigiliafocus.platform.PlatformTimer
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -30,7 +31,8 @@ class TimerViewModel(
     private val resetTimerUseCase: ResetTimerUseCase,
     private val skipToNextModeUseCase: SkipToNextModeUseCase,
     private val settingsRepository: ISettingsRepository,
-    private val platformTimer: PlatformTimer
+    private val platformTimer: PlatformTimer,
+    private val platformAlerter: PlatformAlerter
 ) : ViewModel() {
 
     private val _timerState = MutableStateFlow(TimerState())
@@ -128,6 +130,7 @@ class TimerViewModel(
      * Internal handler called when the [PlatformTimer] reaches zero.
      */
     private fun handleSessionCompletion() {
+        platformAlerter.playCompletionAlert()
         platformTimer.reset()
         _timerState.update { skipToNextModeUseCase(it) }
     }
