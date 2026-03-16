@@ -44,11 +44,12 @@ jobs:
       - name: UI Tests (Instrumentation)
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 29
-          target: default
-          arch: x86_64
+          api-level: 33
+          target: google_apis
+          arch: arm64-v8a  # Corrected from aarch64
           profile: Nexus 6
+          emulator-boot-timeout: 600
           disable-animations: true
-          emulator-boot-timeout: 600 # Keep this to prevent infinite hangs
-          # Since we pre-built, this command just installs and runs
+          # Added -gpu swiftshader_indirect for better headless stability
+          emulator-options: -no-window -gpu swiftshader_indirect -no-audio -no-boot-anim
           script: ./gradlew :composeApp:connectedAndroidDeviceTest --stacktrace
