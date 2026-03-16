@@ -92,6 +92,8 @@ kotlin {
                 implementation(libs.compose.ui.test.manifest)
                 implementation(libs.compose.components.resources)
                 implementation(libs.kotlin.test)
+                implementation(libs.androidx.testExt.junit)
+                implementation(libs.androidx.espresso.core)
             }
         }
     }
