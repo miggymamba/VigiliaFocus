@@ -41,7 +41,14 @@ jobs:
         # Ensures full KMP compilation including commonMain + androidMain actuals.
         run: ./gradlew :androidApp:assembleDebug --stacktrace
 
-      # TODO: VF4.S7 — Add instrumented UI tests step here using
-      # reactivecircus/android-emulator-runner@v2 once ComposeTestRule
-      # tests are implemented. Mirror VindexWeather CI setup (api-level 29,
-      # x86_64, connectedDebugAndroidTest).
+      - name: UI Tests (Instrumentation)
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 29
+          target: default
+          arch: x86_64
+          profile: Nexus 6
+          disable-animations: true
+          emulator-boot-timeout: 600 # Keep this to prevent infinite hangs
+          # Since we pre-built, this command just installs and runs
+          script: ./gradlew :composeApp:connectedAndroidDeviceTest --stacktrace
