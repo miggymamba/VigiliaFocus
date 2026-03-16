@@ -1,11 +1,22 @@
 package com.miguelrivera.vigiliafocus.platform
 
+import android.content.Context
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
+
+/**
+ * Internal dependency resolver for acquiring the Android application context
+ * safely without altering the cross-platform `expect` constructor signature.
+ */
+private object ContextProvider: KoinComponent {
+    val context: Context by inject()
+}
 
 /**
  * Android implementation of [PlatformTimer] using Kotlin coroutines.
@@ -47,12 +58,17 @@ actual class PlatformTimer actual constructor() {
         tickJob?.cancel()
         remainingSeconds = durationSeconds
 
+        val context = ContextProvider.context
+        TimerForegroundService.start(context)
+
         tickJob = scope.launch {
             while (remainingSeconds > 0) {
                 delay(1_000L)
                 remainingSeconds--
+                TimerForegroundService.updateNotificationChannel(context, remainingSeconds)
                 onTick(remainingSeconds)
             }
+            TimerForegroundService.stop(context)
             onFinish()
         }
     }
@@ -64,6 +80,7 @@ actual class PlatformTimer actual constructor() {
     actual fun pause() {
         tickJob?.cancel()
         tickJob = null
+        TimerForegroundService.stop(ContextProvider.context)
     }
 
     /**
@@ -74,5 +91,6 @@ actual class PlatformTimer actual constructor() {
         tickJob?.cancel()
         tickJob = null
         remainingSeconds = 0
+        TimerForegroundService.stop(ContextProvider.context)
     }
 }
