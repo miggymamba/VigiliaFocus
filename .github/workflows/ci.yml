@@ -1,4 +1,4 @@
-name: VigiliaFocus CI
+name: VigiliаFocus CI
 
 on:
   push:
@@ -9,8 +9,8 @@ on:
 jobs:
   build:
     name: Build & Test
-    runs-on: macos-13
-    timeout-minutes: 45
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     steps:
       - name: Checkout Code
@@ -31,20 +31,17 @@ jobs:
         run: chmod +x gradlew
 
       - name: Lint Check
-        run: ./gradlew lintDebug --stacktrace
+        run: ./gradlew :androidApp:lintDebug --stacktrace
 
-      - name: Unit Tests (Domain & Presentation)
-        run: ./gradlew testDebugUnitTest --stacktrace
-
-      - name: UI Tests (Instrumentation)
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: 29
-          target: default
-          arch: x86_64
-          emulator-boot-timeout: 600
-          disable-animations: true
-          script: ./gradlew :composeApp:connectedAndroidDeviceTest --stacktrace
+      - name: Unit Tests
+        # commonTest compiled via Android target — avoids iOS/Xcode dependency on Ubuntu
+        run: ./gradlew :androidApp:testDebugUnitTest --stacktrace
 
       - name: Build Debug APK
+        # Ensures full KMP compilation including commonMain + androidMain actuals.
         run: ./gradlew :androidApp:assembleDebug --stacktrace
+
+      # TODO: VF4.S7 — Add instrumented UI tests step here using
+      # reactivecircus/android-emulator-runner@v2 once ComposeTestRule
+      # tests are implemented. Mirror VindexWeather CI setup (api-level 29,
+      # x86_64, connectedDebugAndroidTest).
