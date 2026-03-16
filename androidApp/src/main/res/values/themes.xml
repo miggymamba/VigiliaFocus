@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.VigiliaFocus" parent="android:Theme.Material.NoActionBar">
+        <!-- Prevents the jarring white flash on cold boot by matching FocusBlack -->
+        <item name="android:windowBackground">#121212</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+    </style>
+</resources>
