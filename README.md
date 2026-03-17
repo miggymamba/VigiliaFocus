@@ -134,7 +134,21 @@ sequenceDiagram
 
 ## Screenshots
 
-> Coming post-MVP (Phase 5).
+### Dark Mode
+
+| Feature | Screenshot |
+|---|---|
+| Focus Mode (Running)  | <img src="docs/images/timer_focus_dark.png" width="300" alt="Timer Focus Mode (Dark)" /> |
+| Break Mode (Idle)  | <img src="docs/images/timer_break_dark.png" width="300" alt="Timer Break Mode (Dark)" /> |
+| Settings  | <img src="docs/images/settings_dark.png" width="300" alt="Settings Screen (Dark)" /> |
+
+### Light Mode
+
+| Feature | Screenshot |
+|---|---|
+| Focus Mode (Running)  | <img src="docs/images/timer_focus_light.png" width="300" alt="Timer Focus Mode (Light)" /> |
+| Break Mode (Idle)  | <img src="docs/images/timer_break_light.png" width="300" alt="Timer Break Mode (Light)" /> |
+| Settings  | <img src="docs/images/settings_light.png" width="300" alt="Settings Screen (Light)" /> |
 
 ---
 
