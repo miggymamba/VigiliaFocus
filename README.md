@@ -93,7 +93,42 @@ VigiliаFocus/
 
 ## Sequence Diagram
 
-> Coming post-MVP (Phase 4). Will cover: timer start/pause/reset flow, mode auto-advance, settings persistence round-trip.
+```mermaid
+sequenceDiagram
+    autonumber
+    participant UI as Compose UI
+    participant VM as TimerViewModel
+    participant USE as UseCases (Start/Tick)
+    participant SET as SettingsRepo
+    participant PT as PlatformTimer (expect/actual)
+
+    Note over UI, PT: [TIMER EXECUTION FLOW - KMP ARCHITECTURE]
+
+    UI->>VM: UserIntent.ToggleTimer
+    VM->>USE: StartTimerUseCase()
+    USE->>PT: startTick(interval = 1000ms)
+    activate PT
+
+    loop Every 1 Second
+        PT-->>USE: emit(tick)
+        USE->>VM: update remaining time
+        VM->>VM: reduce(StateFlow)
+        VM-->>UI: Recompose (New Time)
+    end
+
+    Note over UI, PT: [SESSION COMPLETION & AUTO-ADVANCE]
+
+    PT-->>USE: emit(0)
+    deactivate PT
+    USE->>VM: Timer Complete
+    VM->>VM: advanceTimerMode()
+    Note right of VM: Example: Focus -> Short Break
+    VM->>SET: getDurationForMode(ShortBreak)
+    SET-->>VM: 5 Minutes
+    VM->>VM: reduce(StateFlow: Idle, 5:00)
+    VM-->>UI: Recompose (Break UI)
+    VM->>PT: triggerHapticAndSound()
+```
 
 ---
 
@@ -115,12 +150,3 @@ VigiliаFocus/
 ## License
 
 Vigiliа Focus is licensed under the **Apache License 2.0**. See [LICENSE](LICENSE) for details.
-```
-
----
-
-Commit:
-```
-docs: VF1.S6 README — full scaffold matching portfolio standard
-
-Closes #6
