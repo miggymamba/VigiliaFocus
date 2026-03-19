@@ -13,8 +13,9 @@ import org.koin.dsl.module
  * Provides the [ObservableSettings] instance backed by [SharedPreferencesSettings],
  * using the named store declared in [SettingsRepositoryImpl.STORE_NAME] to ensure
  * the Android backing store and the repository always reference the same file.
+ *
  */
-var androidModule = module {
+val androidModule = module {
     single<ObservableSettings> {
         SharedPreferencesSettings(
             androidContext().getSharedPreferences(

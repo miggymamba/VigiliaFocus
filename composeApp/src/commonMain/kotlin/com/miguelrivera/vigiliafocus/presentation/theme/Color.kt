@@ -36,6 +36,8 @@ val md_theme_light_background = BackgroundLight
 val md_theme_light_onBackground = FocusBlack
 val md_theme_light_surface = FocusWhite
 val md_theme_light_onSurface = FocusBlack
+val md_theme_light_surfaceVariant = FocusGreyLight
+val md_theme_light_onSurfaceVariant = FocusGreyDark
 
 // Dark Colors
 val md_theme_dark_primary = FocusGreyLight
@@ -50,3 +52,6 @@ val md_theme_dark_background = FocusBlack
 val md_theme_dark_onBackground = FocusWhite
 val md_theme_dark_surface = FocusBlack
 val md_theme_dark_onSurface = FocusWhite
+
+val md_theme_dark_surfaceVariant = DividerGrey
+val md_theme_dark_onSurfaceVariant = FocusGreyLight

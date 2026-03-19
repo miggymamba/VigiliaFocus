@@ -27,6 +27,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.miguelrivera.vigiliafocus.domain.model.TimerSettings
 import com.miguelrivera.vigiliafocus.presentation.theme.Dimens
+import com.miguelrivera.vigiliafocus.presentation.theme.VigiliaTheme
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import vigiliafocus.composeapp.generated.resources.Res
@@ -38,7 +39,7 @@ import vigiliafocus.composeapp.generated.resources.settings_short_break
 import vigiliafocus.composeapp.generated.resources.settings_title
 
 /**
- * Stateful wrapper for [SettingsScreen].
+ * Stateful wrapper for [SettingsLayout].
  * Extracts dependencies and state observation, leaving the UI completely decoupled.
  */
 @Composable
@@ -159,14 +160,10 @@ private fun SettingSlider(
     }
 }
 
-
-/**
- * Preview provider for [SettingsScreen] to verify UI layout and theming.
- */
 @Preview
 @Composable
 fun SettingsScreenPreview() {
-    MaterialTheme {
+    VigiliaTheme {
         SettingsLayout(
             settings = TimerSettings(),
             onSaveAndBack = { }

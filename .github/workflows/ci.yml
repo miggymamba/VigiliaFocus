@@ -34,7 +34,7 @@ jobs:
         run: ./gradlew :androidApp:lintDebug --stacktrace
 
       - name: Unit Tests
-        run: ./gradlew :androidApp:testDebugUnitTest --stacktrace
+        run: ./gradlew :composeApp:testAndroidHostTest --stacktrace
 
       # Enable KVM (Hardware Acceleration) so the emulator doesn't choke on software rendering.
       - name: Enable KVM group perms
@@ -48,11 +48,10 @@ jobs:
         with:
           api-level: 29
           target: default
-          arch: x86 # Use x86 (32-bit), NOT x86_64, for faster headless booting
+          arch: x86
           profile: Nexus 6
           emulator-boot-timeout: 600
           disable-animations: true
-          # Aggressively strip emulator overhead
           emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -camera-front none
           script: ./gradlew :composeApp:connectedAndroidDeviceTest --stacktrace
 

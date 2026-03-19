@@ -13,6 +13,8 @@ Rather than treating a timer app as a trivial countdown, this project approaches
 - **MVI State Management:** Immutable `TimerUiState` driven by `StateFlow` ensures predictable rendering across configuration changes.
 - **`expect/actual` Platform Bridge:** Platform clock and timer tick are abstracted behind a clean contract, with each target providing its own implementation.
 - **Settings Persistence:** Timer durations survive app restarts via multiplatform-settings.
+- **Foreground Service:** Active countdowns keep ticking in the background via an Android ForegroundService with a live notification.
+- **Completion Feedback:** Audio and haptic alert on session end via `PlatformAlerter` — `RingtoneManager` + `Vibrator` on Android.
 
 ---
 
@@ -30,8 +32,9 @@ Rather than treating a timer app as a trivial countdown, this project approaches
 | DI | Koin — KMP-native, no annotation processing |
 | Persistence | Multiplatform Settings (`commonMain`) — settings storage |
 | Platform Timer | `expect/actual` — wraps platform clock per target |
+| Background | Android ForegroundService — keeps countdown alive when backgrounded |
 | Navigation | Compose Navigation — single `NavHost` in `commonMain` |
-| Testing | `kotlin.test` in `commonTest` |
+| Testing | `kotlin.test` in `commonTest` + Compose UI tests in `androidDeviceTest` |
 | CI | GitHub Actions |
 
 ---
@@ -43,14 +46,15 @@ This project follows **Clean Architecture** with a KMP/CMP source set layout. Do
 ### Source Set Breakdown
 
 - **`commonMain`**: Compose UI, ViewModels, domain models, use cases, repository interfaces, and `expect` declarations. No platform imports.
-- **`androidMain`**: Android actuals — `PlatformTimer.android.kt`.
+- **`androidMain`**: Android actuals — `PlatformTimer.android.kt`, `PlatformAlerter.android.kt`, `TimerForegroundService.kt`.
 - **`iosMain`**: iOS actuals — `PlatformTimer.ios.kt`. (Phase 6)
 - **`androidApp`**: Entry point only — `MainActivity` calls `setContent { App() }`, nothing else.
+
 ```
 VigiliаFocus/
 ├── composeApp/
 │   ├── commonMain/       ← Compose UI, ViewModels, domain, use cases, data, expect
-│   ├── androidMain/      ← PlatformTimer Android actual
+│   ├── androidMain/      ← PlatformTimer, PlatformAlerter, TimerForegroundService
 │   └── iosMain/          ← PlatformTimer iOS actual (Phase 6)
 └── androidApp/           ← Entry point only (MainActivity)
 ```
@@ -59,7 +63,7 @@ VigiliаFocus/
 
 - **`domain/`**: Pure Kotlin. `TimerMode`, `TimerState`, `TimerSettings`, `Session`, use cases, and `ISettingsRepository` interface. Zero platform or Android dependencies.
 - **`presentation/`**: `TimerViewModel`, `SettingsViewModel`, `TimerScreen`, `SettingsScreen`. MVI pattern — UI observes `StateFlow`, emits intents.
-- **`platform/`**: `expect class PlatformTimer` — the only seam between shared and platform code.
+- **`platform/`**: `expect class PlatformTimer` and `expect class PlatformAlerter` — the only seams between shared and platform code.
 - **`di/`**: Koin modules. `appModule` in `commonMain`, `androidModule` in `androidMain`.
 
 ---
@@ -71,7 +75,10 @@ VigiliаFocus/
 - Clean Architecture applied to KMP — domain layer with zero platform imports
 - Koin dependency injection in a multiplatform context
 - MVI state management with `StateFlow` and sealed interfaces
+- Explicit UI state machine — `TimerUiState` sealed interface routes `Idle`, `Running`, `Paused`, and `Completed` to dedicated composables
+- Android ForegroundService integration with live notification updates
 - `kotlin.test` unit testing in `commonTest` — no Android test runner required
+- Compose UI instrumented tests in `androidDeviceTest`
 
 ---
 
@@ -87,7 +94,7 @@ VigiliаFocus/
 ## Testing Strategy
 
 - **Domain Layer:** Use case and state transition tests in `commonTest` using `kotlin.test`. No mocking framework required — pure functions.
-- **UI Layer:** `ComposeTestRule` instrumented tests verifying timer display, Start/Pause toggle, and mode label transitions. (Phase 4)
+- **UI Layer:** `runComposeUiTest` instrumented tests in `androidDeviceTest` verifying timer display, Start/Pause toggle, mode label transitions, and the session completion screen.
 
 ---
 
@@ -98,36 +105,45 @@ sequenceDiagram
     autonumber
     participant UI as Compose UI
     participant VM as TimerViewModel
-    participant USE as UseCases (Start/Tick)
+    participant USE as UseCases
     participant SET as SettingsRepo
     participant PT as PlatformTimer (expect/actual)
+    participant AL as PlatformAlerter (expect/actual)
 
-    Note over UI, PT: [TIMER EXECUTION FLOW - KMP ARCHITECTURE]
+    Note over UI, AL: [TIMER EXECUTION FLOW - KMP ARCHITECTURE]
 
-    UI->>VM: UserIntent.ToggleTimer
+    UI->>VM: UserIntent.Start
     VM->>USE: StartTimerUseCase()
-    USE->>PT: startTick(interval = 1000ms)
+    USE-->>VM: TimerState(isRunning=true)
+    VM->>PT: start(durationSeconds, onTick, onFinish)
     activate PT
 
     loop Every 1 Second
-        PT-->>USE: emit(tick)
-        USE->>VM: update remaining time
-        VM->>VM: reduce(StateFlow)
-        VM-->>UI: Recompose (New Time)
+        PT-->>VM: onTick(remaining)
+        VM->>VM: _timerState.update(remainingSeconds)
+        VM-->>UI: Recompose (TimerUiState.Running)
     end
 
-    Note over UI, PT: [SESSION COMPLETION & AUTO-ADVANCE]
+    Note over UI, AL: [SESSION COMPLETION - USER ACKNOWLEDGEMENT REQUIRED]
 
-    PT-->>USE: emit(0)
+    PT-->>VM: onFinish()
     deactivate PT
-    USE->>VM: Timer Complete
-    VM->>VM: advanceTimerMode()
-    Note right of VM: Example: Focus -> Short Break
-    VM->>SET: getDurationForMode(ShortBreak)
-    SET-->>VM: 5 Minutes
-    VM->>VM: reduce(StateFlow: Idle, 5:00)
-    VM-->>UI: Recompose (Break UI)
-    VM->>PT: triggerHapticAndSound()
+    VM->>AL: playCompletionAlert()
+    VM->>PT: reset()
+    VM->>VM: _timerState stays at remainingSeconds=0
+    VM-->>UI: Recompose (TimerUiState.Completed)
+    UI-->>UI: Show TimerCompleteLayout
+
+    UI->>VM: UserIntent.Skip (user taps SKIP)
+    VM->>USE: SkipToNextModeUseCase()
+    USE-->>VM: TimerState(nextMode, fullDuration, isRunning=false)
+    VM-->>UI: Recompose (TimerUiState.Idle, next mode)
+
+    Note over UI, AL: [SETTINGS SYNC]
+
+    SET-->>VM: getSettings() emission
+    VM->>USE: ResetTimerUseCase() if isAtStart
+    VM-->>UI: Recompose (updated duration)
 ```
 
 ---
@@ -155,8 +171,6 @@ sequenceDiagram
 ## Future Roadmap
 
 - **iOS Support:** `PlatformTimer.ios.kt` actual using `NSTimer` or `DispatchQueue`. Full iOS validation. (Phase 6)
-- **Background Timer:** Android `ForegroundService` to keep countdown running when app is backgrounded.
-- **Completion Sound:** `expect fun playCompletionSound()` — `MediaPlayer` on Android, `AudioServicesPlaySystemSound` on iOS.
 - **Session History:** Persist completed sessions with timestamps for productivity tracking.
 
 ---

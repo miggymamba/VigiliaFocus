@@ -11,4 +11,14 @@
     <string name="action_pause">PAUSE</string>
     <string name="action_reset">RESET</string>
     <string name="action_skip">SKIP</string>
+
+    <!-- Timer mode labels — kept as string resources so they participate in
+         future localization without touching domain or presentation code. -->
+    <string name="mode_focus">FOCUS</string>
+    <string name="mode_short_break">SHORT BREAK</string>
+    <string name="mode_long_break">LONG BREAK</string>
+
+    <!-- Session completion banner shown when a countdown reaches zero. -->
+    <string name="session_complete">Session Complete</string>
+    <string name="session_complete_subtitle">Take a moment before starting the next interval.</string>
 </resources>
